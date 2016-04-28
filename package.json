@@ -1,0 +1,23 @@
+{
+  "name": "strokemovesfast",
+  "version": "1.0.0",
+  "description": "A microsite for UHS’s stroke awareness campaign (developed by ndp, deployed by Small Batch)",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "./node_modules/flightplan/bin/fly.js uhs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smallbatch/strokemovesfast.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smallbatch/strokemovesfast/issues"
+  },
+  "homepage": "https://github.com/smallbatch/strokemovesfast#readme",
+  "devDependencies": {
+    "flightplan": "^0.6.13"
+  }
+}
