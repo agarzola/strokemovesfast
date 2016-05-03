@@ -33758,16 +33758,13 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 		function _init() {	
 			initScrollMagic();
-
+			initAnalytics();
 			initNav();
-
 			initBgEffects();
-
 			initIntro();
 			initFacts();
 			initMessages();
 			initFinale();
-
 			initAddThis();
 
 			smokeEffect();
@@ -33780,6 +33777,147 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 			}
 		}
 
+		function initAnalytics() {
+
+			// Sections
+			new ScrollMagic.Scene({
+				triggerElement : '#intro',
+				duration       : $('#intro').innerHeight()
+			})
+				//.addIndicators({name : 'intro'})
+				.addTo(elements.controller)
+				.on('enter', function() {
+					analytics.page('Start');
+				});
+
+			new ScrollMagic.Scene({
+				triggerElement : '#signs',
+				duration       : $('#signs').innerHeight()
+			})
+				//.addIndicators({name : 'signs'})
+				.addTo(elements.controller)
+				.on('enter', function() {
+					analytics.page('Signs');
+				});
+
+			new ScrollMagic.Scene({
+				triggerElement : '#finale',
+				duration       : $('#finale').innerHeight()
+			})
+				//.addIndicators({name : 'finale'})
+				.addTo(elements.controller)
+				.on('enter', function() {
+					analytics.page('Finale');
+				});
+
+			// Events
+			$('#messages > div.messages-container > div').on({
+				'analytics:fire' : function() {
+					analytics.page('Messages', $(this).data('timer') +' seconds');					
+				}
+			});
+
+			$('#signs > .content-container > a').on({
+				'click' : function(e) {
+					var $this = $(this),
+						label = $this.find('h3').text(),
+						text  = $this.find('em').text(),
+						action;
+
+					if ($this.hasClass('active')) {
+						action = 'Close';
+					} else {
+						action = 'Open';
+					}
+
+					analytics.track('Learned about FAST', {
+						category: 'Engagement',
+						label: label,
+						text: text,
+						action: action
+					});
+				}
+			});
+
+			
+			App.elements.$win.on({
+				'addthis:share' : function(e, svc) {
+					if (svc.data.service === 'tweet') {
+						analytics.track('Shared on Social', {
+						   category: 'Engagement',
+						   label: 'Twitter',
+						   action: 'Share',
+						   location: 'unknown'
+						});
+					}
+				},
+				'facebook:like' : function(e, url, el) {
+					analytics.track('Shared on Social', {
+					   category: 'Engagement',
+					   label: 'Facebook',
+					   action: 'Like',
+					   location: 'sidebar'
+					});
+				}
+			});			
+
+			$('nav .share-buttons > a, #signs .links .active-state > a').on({
+				'click' : function(e) {
+					var $this = $(this),
+						label,						
+						location;
+
+					if ($this.hasClass('addthis_button_facebook')) {
+						label = 'Facebook';
+					} else if ($this.hasClass('addthis_button_tweet')) {
+						label = 'Twitter';
+					} else if ($this.hasClass('addthis_button_email')) {
+						label = 'Email';
+					}
+
+					if ($this.parents('#signs').length > 0) {
+						location = 'button';
+					} else if ($this.parents('nav').length > 0) {
+						location = 'sidebar';
+					}
+
+					analytics.track('Shared on Social', {
+					   category: 'Engagement',
+					   label: label,
+					   action: 'Share',
+					   location: location
+					});
+				}
+			});
+
+			// need to track twitter and likes
+			
+			$('#signs a[title*="Download"], #finale .links a').on({
+				'click' : function(e) {
+					var $this = $(this),
+						label, text;
+
+					if ($this.parents('#signs').length > 0) {
+						label = 'Downloaded PDF';
+					} else if ($this.attr('title').indexOf('Learn') > -1) {
+						label = 'Learned More';
+					} else if ($this.attr('title').indexOf('Assessment') > -1) {
+						label = 'Took Assessment';
+					} else if ($this.attr('title').indexOf('newsletter') > -1) {
+						label = 'Signed up for Newsletter';
+					}
+
+					text = $this.text().trim();
+
+					analytics.track('Clicked CTA', {
+						category: 'Conversion',
+						label: label,
+						text: text
+					});
+				}
+			});
+		}
+
 		function initAddThis() {
 			window.addthis_config = window.addthis_config || {};
 			window.addthis_config.pubid = 'ra-572636b97b99bf7d';
@@ -33789,10 +33927,13 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 		    
 
 			$.getScript('//s7.addthis.com/js/300/addthis_widget.js#domready=1', function(data, textStatus, jqxhr) {
-					//window.addthis.toolbox('.share-buttons');
-					//window.addthis.addEventListener('addthis.menu.share', function(svc) {
-				 	//	console.log(svc);
-				 	//});
+				//window.addthis.toolbox('.share-buttons');
+				//
+				window.addthis.addEventListener('addthis.ready', function() {
+					window.addthis.addEventListener('addthis.menu.share', function(svc) {
+				 		App.elements.$win.trigger('addthis:share', svc);
+				 	});				 	
+				});				
 			});	        
 		}
 		
@@ -33947,18 +34088,6 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				.on('enter', function(e) {
 					$('#signs').removeClass('leave');
 					$('#bg-stage > div.preload').css('opacity', 0);
-
-					// var mCount = 0, scrollToVal;
-					// elements.countSkipTimer = setInterval(function() {
-					// 	scrollToVal = $('#messages').offset().top + ($('#messages .messages-container > div').eq(mCount).height() * mCount);
-					// 	console.log(mCount, scrollToVal);
-
-					// 	TweenMax.to(window, 0.4, {scrollTo: {y: scrollToVal }, ease: Power2.easeOut});
-					// 	mCount++;
-
-					// }, settings.countdownWaitTime);
-
-					// App.elements.$win.on('scroll', function(e) { clearTimeout(elements.countSkipTimer); });
 				})
 				.on('end', function(e) {
 					if (e.scrollDirection === "FORWARD") {
@@ -34002,7 +34131,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				ticksCount    = $ticks.length,
 				ticksPer      = 1 / (ticksCount - 1),
 				ticksStep     = ticksPer * settings.messagesDuration,
-				i = 0, x = 0, t = 0, effectOpacity;
+				i = 0, x = 0, t = 0, effectOpacity, prevI;
 
 			$ticks.each(function(i) {
 				var $tick = $(this);
@@ -34061,10 +34190,15 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 					i = i === 0 ? 1 : i;
 
-					$messages
-						.removeClass('active')
-						.eq(i-1)
-							.addClass('active');
+					if (i !== prevI) {
+						prevI = i;
+
+						$messages
+							.removeClass('active')
+							.eq(i-1)
+								.addClass('active')
+								.trigger('analytics:fire');
+					}
 				})
 				.on('start', function(e) {			
 					if (e.scrollDirection === "FORWARD") {
@@ -34078,6 +34212,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 					if (e.scrollDirection === "REVERSE") {
 						$messages.removeClass('active');
+						$messages.eq(0).addClass('active');
 						$messages.eq(messagesCount).addClass('active');
 						$ticks.hide();
 						$ticks.eq(ticksCount).show();
@@ -34246,11 +34381,6 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				ch = c.height = window.innerHeight / divider;
 			});
 
-			// window.requestAnimationFrame || (window.requestAnimationFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback, element) {				
-			// 	window.setTimeout(function() {
-			// 		callback(new Date());
-			// 	}, 1000 / 60);
-			// });
 
 			run();
 		}

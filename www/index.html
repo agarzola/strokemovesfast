@@ -8,22 +8,23 @@
 	<title></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic" rel="stylesheet" type="text/css" />
-	<link href="_resources/css/main.css" rel="stylesheet" />
-	<script src="_resources/js/head.js"></script>
 
+	<link href="_resources/css/main.min.css" rel="stylesheet" />
+	<script src="_resources/js/head.min.js"></script>
 
 	<!-- Favicons -->
 	<link rel="shortcut icon" href="_resources/imgs/favicon.ico" />
+
+	<script type="text/javascript">
+	!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";  
+	analytics.load("6zp2V8Wa6ElN4orjuyIUlDx2VoKBUNr7");    
+	}}();
+	</script>
 </head>
 <body  class="">
 <div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6&appId=220403528003483";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+<script>
+window.fbAsyncInit=function(){FB.init({appId:"220403528003483",xfbml:!0,version:"v2.6"}),FB.Event.subscribe("edge.create",function(e,n){App.elements.$win.trigger("facebook:like",e,n)})},function(e,n,t){var c,i=e.getElementsByTagName(n)[0];e.getElementById(t)||(c=e.createElement(n),c.id=t,c.src="//connect.facebook.net/en_US/sdk.js",i.parentNode.insertBefore(c,i))}(document,"script","facebook-jssdk");
 </script>
 
 
@@ -181,42 +182,42 @@
 
     <div class="messages-container">
 
-        <div class="active">
+        <div class="active" data-timer="10">
             <h1>Ten Seconds.</h1>
             <p>1.5 miles of the myelinated nerve fibers linking your brain to your body are gone.</p>
 
             <p>You are losing the ability to swallow.</p>
         </div>
 
-        <div>
+        <div data-timer="20">
             <h1>Twenty Seconds.</h1>
             <p>5 billion synaptic connections burnt away.</p>
 
             <p>5 billion memories are going up in smoke.</p>
         </div>
 
-        <div>
+        <div data-timer="30">
             <h1>Thirty Seconds.</h1>
             <p>1 million neurons destroyed.</p>
 
             <p>Affecting your thinking, learning, understanding.</p>
         </div>
 
-        <div>
+        <div data-timer="40">
             <h1>Forty Seconds.</h1>
             <p>6 miles of nerve fibers lost.</p>
 
             <p>Paralyzing muscles in your legs, arms, or face.</p>
         </div>
 
-        <div>
+        <div data-timer="50">
             <h1>Fifty Seconds.</h1>
             <p>12 billion synapses vanish.</p>
 
             <p>Devastating your speech.</p>
         </div>
 
-        <div>
+        <div data-timer="60">
             <h1>One minute.</h1>
             <p>8 miles of nerve fibers. 2 million neurons. 15 billion synapses.</p>
 
@@ -302,8 +303,8 @@
 </div>    
 
 
-<script src="_resources/js/main.js"></script>
 
+<script src="_resources/js/main.min.js"></script>
 
 </body>
 </html>
