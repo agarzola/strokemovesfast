@@ -33756,7 +33756,8 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 			bgVideoCurrentTime: 0,
 			introFrameRate    : 30,
 			stageImages       : preloadedImages,
-			navComplete       : true
+			navComplete       : true,
+			videoCapable      : true
 		};
 
 		var pages = {
@@ -33764,9 +33765,18 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 		function _init() {	
 			initScrollMagic();
-			initAnalytics();			
+			initAnalytics();
+			checkVideoCapable();
 
-			if (Modernizr.touchevents) {
+			if (navigator.userAgent.indexOf('NT 6.1') > 0) {
+				if (App.elements.$html.hasClass('no-touchevents')) {
+					App.elements.$html
+						.removeClass('no-touchevents')
+						.addClass('touchevents');
+				}
+			}
+
+			if (!settings.videoCabable) {
 				elements.$bgEffects = $('<div id="bg-effects"></div>').appendTo('div.stage-effects');
 				initPreloadImages();
 
@@ -33934,7 +33944,11 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 		}
 
 		function initPreloadVideo() {
-			elements.introVideo.oncanplay = function() {
+			//alert(!!document.createElement('video').canPlayType);
+
+			//elements.introVideo.oncanplay = function() {
+			$(elements.introVideo).bind('playIntro', function() {
+				//alert('playIntro fired');
 				if (settings.videoLoaded === false) {
 					settings.videoLoaded = true;
 					App.elements.$body.addClass('loaded');
@@ -33948,7 +33962,16 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 					initFacts();					
 					initMessages();
 				}
-			};
+			});
+
+
+			if (elements.introVideo.readyState >= elements.introVideo.HAVE_FUTURE_DATA) {
+			    $(elements.introVideo).trigger('playIntro');
+			} else {
+			    elements.introVideo.addEventListener('canplay', function () {
+			       $(elements.introVideo).trigger('playIntro');
+			    }, false);
+			}
 		}
 
 		function initPreloadImages() {	
@@ -34055,7 +34078,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 			App.elements.$win.on('scroll', function(e) { clearTimeout(elements.introSkipTimer); });
 
-			if (Modernizr.touchevents) {
+			if (!settings.videoCabable) {
 				$('#bg-effects')
 					.clone()
 					.appendTo('#intro')
@@ -34089,7 +34112,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 						$('#intro .title').css('opacity', 1);
 						$('#intro .sub-title').css('opacity', 0);
 
-						if (Modernizr.touchevents) {
+						if (!settings.videoCabable) {
 							playIntroImages();
 						} else {
 							playIntroVideo();	
@@ -34115,7 +34138,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 			$intro.removeClass('active');
 
 			elements.introInt = setInterval(function() {
-				opacityPer = opacityPer + 0.1;				
+				opacityPer = opacityPer + 0.1;			
 
 				$stageImages.eq(imageNum).css('opacity', opacityPer);				
 
@@ -34163,7 +34186,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				.on('enter', function(e) {
 					$('#signs').removeClass('leave');
 
-					if (Modernizr.touchevents) {
+					if (!settings.videoCabable) {
 						$('#bg-stage > div.preload').css('opacity', 0);
 					} else {
 						elements.bgVideo.currentTime = 0;
@@ -34211,7 +34234,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				ticksStep     = ticksPer * settings.messagesDuration,
 				i = 0, x = 0, t = 0, y = 0, effectOpacity, prevI, prevX;
 
-			if (Modernizr.touchevents) {
+			if (!settings.videoCabable) {
 				effects      = $('#bg-effects > div.preload');
 				effectsCount  = effects.length;
 				effectsPer    = 1 / (effectsCount - 1);
@@ -34247,7 +34270,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				.addTo(elements.controller)
 				.on("progress", function(e) {
 
-					if (Modernizr.touchevents) {
+					if (!settings.videoCabable) {
 						effectOpacity = Math.abs((e.progress.toFixed(3) * settings.messagesDuration) - (x * effectsStep)) / effectsStep;
 
 						effectOpacity = effectOpacity < 0.1 ? 0 : effectOpacity;
@@ -34255,7 +34278,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 					}
 
 					if (e.scrollDirection === "FORWARD") {
-						if (Modernizr.touchevents) {
+						if (!settings.videoCabable) {
 							effects.eq(x).css('opacity', 1 - effectOpacity);
 						}
 
@@ -34274,7 +34297,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 							t++;
 						}
 					} else {
-						if (Modernizr.touchevents) {
+						if (!settings.videoCabable) {
 							effects.css('opacity', 0);
 						}
 
@@ -34292,7 +34315,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 					i = i === 0 ? 1 : i;
 
-					if (!Modernizr.touchevents) {
+					if (settings.videoCabable) {
 						if (x !== prevX) {
 							prevX = x;
 							effects.play();
@@ -34315,7 +34338,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 					if (e.scrollDirection === "FORWARD") {
 						// Entered through the top
 						x = 0;
-						if (Modernizr.touchevents) {
+						if (!settings.videoCabable) {
 							effects.css('opacity', 0);
 						} else {
 							effects.currentTime = 0;
@@ -34344,7 +34367,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				.on('end', function(e) {				
 					if (e.scrollDirection === "REVERSE") {
 						x = effectsCount - 1;
-						if (Modernizr.touchevents) {
+						if (!settings.videoCabable) {
 							effects.css('opacity', 1);
 						} else {
 							effects.setCurrentTime = effects.duration;
@@ -34476,6 +34499,22 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 
 
 			run();
+		}
+
+		function checkVideoCapable() {
+			var retval = true;
+			
+			if (Modernizr.touchevents || (
+						navigator.userAgent.indexOf('NT 6.1') > 0 && (
+							navigator.userAgent.indexOf('MSIE ') > 0 || 
+							navigator.userAgent.indexOf('Trident/') > 0
+						)
+					)
+				) {
+				retval = false;
+			}
+
+			settings.videoCabable = retval;
 		}
 
 		// Reveal public methods and global elements, settings
